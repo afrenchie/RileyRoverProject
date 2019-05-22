@@ -1,0 +1,10 @@
+// Project configuration
+brick.pref {
+    // Main class //
+    mainClass = "riley.rover.ws.Main"
+
+    // Brick connection parameters //
+    sshHost = "ev3dev.local"
+    sshUser = "robot"
+    sshPassword = "maker"
+}

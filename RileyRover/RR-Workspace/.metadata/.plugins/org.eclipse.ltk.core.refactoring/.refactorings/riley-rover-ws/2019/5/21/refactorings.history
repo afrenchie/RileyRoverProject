@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;riley-rover-ws/src/main/java/riley.rover.ws/SimpleWebServer.java&apos; to &apos;RileyRoverWS.java&apos;" description="Rename resource &apos;SimpleWebServer.java&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/java/riley.rover.ws/SimpleWebServer.java" name="RileyRoverWS.java" stamp="1558540912283" updateReferences="true"/>
+</session>

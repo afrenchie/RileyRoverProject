@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+
+
+table {
+  width: 100%;
+  text-align: center;
+}
+
+.butt {
+    border: 1px outset blue;
+    background-color: lightBlue;
+    height:50px;
+    width:50px;
+    cursor:pointer;
+}
+
+.butt:hover {
+   background-color: blue;
+   color:white;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Telecommande V2</h1>
+
+<table>
+  <tr>
+    <td><input id="up-left" class="butt" type="button" value="^"/></td>
+    <td></td>
+    <td><input id="up-right" class="butt" type="button" value="^"/></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><input id="stop" class="butt" type="button" value="stop"/></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><input id="down-left" class="butt" type="button" value="v"/></td>
+    <td></td>
+    <td><input id="down-right" class="butt" type="button" value="v"/></td>
+  </tr>
+</table>
+<p>Etat du WS : <span id="wscurstate">off</span></p>
+<p>Message reçu : <span id="message">off</span></p>
+<input id="startWSbutton" type="button" value="Start SW" onclick="startWS();" disabled/>
+<input id="stopWSbutton" type="button" value="Start SW" onclick="stopWS();" />
+<input id="sendToWSbutton" type="button" value="Send to WS" onclick="sendToWS();" />
+<input id="wsinput" type="text"/>
+<input id="wsstate" type="hidden" value="off"/>
+<script>
+
+/*
+https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications#Envoi_de_données_vers_le_serveur
+*/
+
+var startWSbutton = document.getElementById("startWSbutton");
+var stopWSbutton = document.getElementById("stopWSbutton");
+var wscurstateText = document.getElementById("wscurstate");
+var messageText = document.getElementById("message");
+var wsstateText = document.getElementById("wsinput");
+var wsstate = document.getElementById("wsstate");
+var roverSocket = new WebSocket("ws://169.254.192.74:9000");
+
+function sendToWS() {
+    var text = wsstateText.value;
+    if (text){
+      console.log("sending data : "+text);
+      text = text + "\n";
+      roverSocket.send(text);
+    }
+}
+
+function stopWS() {
+  stopWSbutton.disabled = true;
+  wsstate.value = "off";
+  roverSocket.close();
+}
+
+function startWS(){
+  console.log("Starting WS");
+  roverSocket = new WebSocket("ws://169.254.192.74:9000");
+  startWSbutton.disabled = true;
+  wsstate.value = "on";
+  var serverOn = true;
+
+}
+
+function sendStuff() {
+    console.log("sending");
+    roverSocket.send("1\n");
+}
+
+// Assume we are connected
+roverSocket.onopen = function(event) {
+  console.log("WebSocket is open now.");
+  wscurstateText.innerHTML = "on";
+  stopWSbutton.disabled = false;
+  //window.setInterval(sendStuff, 500);
+};
+
+roverSocket.onmessage = function (event) {
+  console.log("message :");
+  console.log(event.data);
+  stateText.innerHTML = event.data;
+}
+
+roverSocket.onclose = function (event) {
+  wscurstateText.innerHTML = "off";
+  startWSbutton.disabled = false;
+  console.log("WebSocket is closed.");
+};
+
+
+
+
+/*
+https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+*/
+
+/*
+var keys = [];
+document.body.innerHTML = "Keys currently pressed: "
+window.addEventListener("keydown",
+    function(e){
+        keys[e.keyCode] = e.keyCode;
+        var keysArray = getNumberArray(keys);
+        document.body.innerHTML = "Keys currently pressed:" + keysArray;
+        if(keysArray.toString() == "17,65"){
+            document.body.innerHTML += " Select all!"
+        }
+    },
+false);
+
+window.addEventListener('keyup',
+    function(e){
+        keys[e.keyCode] = false;
+        document.body.innerHTML = "Keys currently pressed: " + getNumberArray(keys);
+    },
+false);
+
+function getNumberArray(arr){
+    var newArr = new Array();
+    for(var i = 0; i < arr.length; i++){
+        if(typeof arr[i] == "number"){
+            newArr[newArr.length] = arr[i];
+        }
+    }
+    return newArr;
+}
+*/
+
+</script>
+
+</body>
+</html>
