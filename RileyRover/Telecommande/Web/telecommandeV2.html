@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<!--
+Example :
+https://www.pegaxchange.com/2018/03/23/websocket-client/
+-->
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -43,7 +47,6 @@ var ws_port = null;
 /**
  * Event handler for clicking on button "Connect"
  */
-
 function onConnectClick() {
     var ws_protocol = document.getElementById("protocol").value;
     var ws_hostname = document.getElementById("hostname").value;
@@ -55,6 +58,10 @@ function onConnectClick() {
  */
 function onDisconnectClick() {
     webSocket.close();
+    document.getElementById("message_btn").disabled   = true;
+    document.getElementById("command_btn").disabled   = true;
+    document.getElementById("btnConnect").disabled    = false;
+    document.getElementById("btnDisconnect").disabled = true;
 }
 /**
  * Open a new WebSocket connection using the given parameters
@@ -67,13 +74,15 @@ function openWSConnection(protocol, hostname, port) {
         webSocket = new WebSocket(webSocketURL);
         webSocket.onopen = function(openEvent) {
             console.log("WebSocket OPEN: " + JSON.stringify(openEvent, null, 4));
-            document.getElementById("btnSend").disabled       = false;
+            document.getElementById("message_btn").disabled   = false;
+            document.getElementById("command_btn").disabled   = false;
             document.getElementById("btnConnect").disabled    = true;
             document.getElementById("btnDisconnect").disabled = false;
         };
         webSocket.onclose = function (closeEvent) {
             console.log("WebSocket CLOSE: " + JSON.stringify(closeEvent, null, 4));
-            document.getElementById("btnSend").disabled       = true;
+            document.getElementById("message_btn").disabled   = true;
+            document.getElementById("command_btn").disabled   = true;
             document.getElementById("btnConnect").disabled    = false;
             document.getElementById("btnDisconnect").disabled = true;
         };
@@ -96,21 +105,32 @@ function openWSConnection(protocol, hostname, port) {
 /**
  * Send a message to the WebSocket server
  */
-function onSendClick() {
+function onMessageSendClick() {
     if (webSocket.readyState != WebSocket.OPEN) {
         console.error("webSocket is not open: " + webSocket.readyState);
         return;
     }
-    var msg = document.getElementById("message").value;
-    webSocket.send(msg);
+    webSocket.send(document.getElementById("message_input").value);
 }
+
+function onCommandSendClick() {
+    if (webSocket.readyState != WebSocket.OPEN) {
+        console.error("webSocket is not open: " + webSocket.readyState);
+        return;
+    }
+    var myArray = new ArrayBuffer(1);
+    var longInt8View = new Uint8Array(myArray);
+    longInt8View[0] = document.getElementById("command_input").value;
+    webSocket.send(longInt8View);
+}
+
 </script>
 </head>
 <body>
 
 
   <h1>WebSocket Client</h1>
-  <!-- WebSocket Connection Parameters Table -->
+  <!-- Paramètres de connexion websocket-->
   <table>
       <tr>
           <td width="200px">WS Protocol</td>
@@ -137,16 +157,29 @@ function onSendClick() {
           </td>
       </tr>
   </table><br/>
-  <!-- Send Message Table -->
+  <!-- Envoi de messages -->
   <table>
       <tr>
           <td width="200px">Message</td>
-          <td><input type="text" id="message"/></td>
+          <td><input type="text" id="message_input"/></td>
       </tr>
       <tr>
           <td></td>
           <td>
-              <input id="btnSend" type="button" value="Send Message" disabled="disabled" onclick="onSendClick()">
+              <input id="message_btn" type="button" value="Send Message" disabled="disabled" onclick="onMessageSendClick()">
+          </td>
+      </tr>
+  </table><br/>
+  <!-- Envoi de commandes -->
+  <table>
+      <tr>
+          <td width="200px">Commande</td>
+          <td><input type="text" id="command_input"/></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>
+              <input id="command_btn" type="button" value="Send Message" disabled="disabled" onclick="onCommandSendClick()">
           </td>
       </tr>
   </table><br/>
