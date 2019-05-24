@@ -2,5 +2,7 @@
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
-./RileyRover/RR-Workspace
-./RileyRover/RR-Workspace/*
+RileyRover/RR-Workspace
+RileyRover/RR-Workspace/*
+RileyRover/riley-rover-ws/bin
+RileyRover/riley-rover-ws/bin/*
