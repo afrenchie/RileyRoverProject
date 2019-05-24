@@ -6,13 +6,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,8 @@ public class RileyRoverWS {
 	public static Logger LOGGER = LoggerFactory.getLogger(RileyRoverWS.class);
 	private static String HANDSHAKEKEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 	public static final int PORT = 9000;
-	
+	//Timeout de 30 secondes
+	public static final int READ_TIMEOUT = 30000;
 	private ServerSocket serversocket;
 	private Socket client;
 	private InputStream inputstream;
@@ -90,10 +91,6 @@ public class RileyRoverWS {
 	private byte[] byteCmdMsg() {
 		return new byte[] { (byte) 0x81, 0x03, 0x43, 0x6d, 0x64};
 	}
-	
-	private byte[] byteByeMsg() {
-		return new byte[] { (byte) 0x81, 0x03, 0x42, 0x79, 0x65};
-	}
 
 	@SuppressWarnings("resource")
 	private void handshake() {
@@ -122,27 +119,25 @@ public class RileyRoverWS {
 		}
 	}
 	
-	private byte[] readBytes() {
+	private byte[] readBytes() throws IOException {
 		int lenframe = 0;
 		int[] keys = new int[4];
 		byte[] decoded = null;
-		try {
-			lenframe = inputstream.read() - 128;
-			decoded = new byte[lenframe];
-			keys[0] = (byte) inputstream.read();
-			keys[1] = (byte) inputstream.read();
-			keys[2] = (byte) inputstream.read();
-			keys[3] = (byte) inputstream.read();
-			for (int i = 0; i < lenframe; i++) {
-				decoded[i] = (byte) (inputstream.read() ^ keys[i & 0x3]);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+
+		lenframe = inputstream.read() - 128;
+		decoded = new byte[lenframe];
+		keys[0] = (byte) inputstream.read();
+		keys[1] = (byte) inputstream.read();
+		keys[2] = (byte) inputstream.read();
+		keys[3] = (byte) inputstream.read();
+		for (int i = 0; i < lenframe; i++) {
+			decoded[i] = (byte) (inputstream.read() ^ keys[i & 0x3]);
 		}
+		
 		return decoded;
 	}
 	
-	private void executeCommand(byte[] decoded) {
+	private void executeCommand(byte[] decoded) throws IOException {
 		byte cmd = decoded[0];
 		switch(cmd) {
 			case CMD_KILL:
@@ -190,67 +185,61 @@ public class RileyRoverWS {
 		}
 	}
 	
-	private void close() {
-		try {
-			outputstream.write(byteByeMsg(), 0, 5);
-			outputstream.flush();
-			outputstream.close();
-			inputstream.close();
-			client.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private void close() throws IOException {
+		outputstream.close();
+		inputstream.close();
+		client.close();
 		System.out.println("Client déconnecté.");
 	}
 	
 	public void run() throws Exception {
 		for (;;) {
-			client = serversocket.accept();
-			System.out.println("Tentative de connection.");
-			inputstream = client.getInputStream();
-			outputstream = client.getOutputStream();
-			handshake();
-			System.out.println("Télécommande connectée.");
-			System.out.println("Ecoute en cours...");
-			// https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
-			
-			long lastCommand = 0;
-			boolean cmd = false;
-			byte[] decoded = null;
-			int curByte = 0;
-			while (true) {
-				//On ferme la connexion au client lorsqu'il n'y a plus de commandes au bout de 5 secondes
-				/*
-				if (((System.currentTimeMillis() - lastCommand) / 1000.0) > 10) {
-					System.out.println("Timeout atteind.");
-					close();
-					break;
+			try {
+				client = serversocket.accept();
+				System.out.println("Tentative de connection.");
+				inputstream = client.getInputStream();
+				outputstream = client.getOutputStream();
+				handshake();
+				System.out.println("Télécommande connectée.");
+				System.out.println("Ecoute en cours...");
+				// https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
+				client.setSoTimeout(READ_TIMEOUT);
+				long lastCommand = 0;
+				boolean cmd = false;
+				byte[] decoded = null;
+				int curByte = 0;
+				while (true) {
+					curByte = inputstream.read();
+					if (curByte == 129)
+						cmd = false;
+					else if (curByte == 130)
+						cmd = true;
+					else
+						continue;
+					lastCommand = System.currentTimeMillis();
+					System.out.println("lastCommand " + lastCommand);
+					decoded = readBytes();
+					
+					if (! cmd) {
+						System.out.println("Message = " + new String(decoded, StandardCharsets.UTF_8));
+						outputstream.write(byteMsgMsg(), 0, 5);
+						outputstream.flush();
+					}
+					else {
+						executeCommand(decoded);
+						outputstream.write(byteCmdMsg(), 0, 5);
+						outputstream.flush();
+					}
+					
 				}
-				*/
-				curByte = inputstream.read();
-				if (curByte == 129)
-					cmd = false;
-				else if (curByte == 130)
-					cmd = true;
-				else
-					continue;
-				lastCommand = System.currentTimeMillis();
-				System.out.println("lastCommand " + lastCommand);
-				decoded = readBytes();
-				
-				if (! cmd) {
-					System.out.println("Message = " + new String(decoded, StandardCharsets.UTF_8));
-					outputstream.write(byteMsgMsg(), 0, 5);
-					outputstream.flush();
-				}
-				else {
-					executeCommand(decoded);
-					outputstream.write(byteCmdMsg(), 0, 5);
-					outputstream.flush();
-				}
-				
+			} catch(IOException e) {
+				e.printStackTrace();
+				close();
+			}  catch(Exception e) {
+				e.printStackTrace();
+				close();
 			}
+			
 		}
 	}
 }
