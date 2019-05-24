@@ -57,6 +57,9 @@ function onConnectClick() {
  * Event handler for clicking on button "Disconnect"
  */
 function onDisconnectClick() {
+    var longInt8View = new Uint8Array(new ArrayBuffer(1));
+    longInt8View[0] = 240;
+    webSocket.send(longInt8View);
     webSocket.close();
     document.getElementById("message_btn").disabled   = true;
     document.getElementById("command_btn").disabled   = true;
@@ -118,8 +121,7 @@ function onCommandSendClick() {
         console.error("webSocket is not open: " + webSocket.readyState);
         return;
     }
-    var myArray = new ArrayBuffer(1);
-    var longInt8View = new Uint8Array(myArray);
+    var longInt8View = new Uint8Array(new ArrayBuffer(1));
     longInt8View[0] = document.getElementById("command_input").value;
     webSocket.send(longInt8View);
 }
