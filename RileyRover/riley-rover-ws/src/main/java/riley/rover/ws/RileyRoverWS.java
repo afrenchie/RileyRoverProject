@@ -41,10 +41,12 @@ public class RileyRoverWS {
 	private final byte CMD_DROIT_RECULER = (byte)  0b00001000; //8   0x8
 	private final byte CMD_PIVOT_GAUCHE = (byte)   0b00001001; //9   0x9
 	private final byte CMD_PIVOT_DROIT = (byte)    0b00000110; //6   0x6
+	private final byte CMD_NEUTRE = (byte)         0b00010000; //16  0x10
 	
-	
+	private Controller controller;
 	
 	public RileyRoverWS() throws IOException {
+		controller = new Controller();
 		System.out.println("Creation du serveur");
 		LOGGER.info("Creation du serveur");
 		serversocket = new ServerSocket(PORT);
@@ -137,7 +139,7 @@ public class RileyRoverWS {
 		return decoded;
 	}
 	
-	private void executeCommand(byte[] decoded) throws IOException {
+	private void printCommand(byte[] decoded) throws IOException {
 		byte cmd = decoded[0];
 		switch(cmd) {
 			case CMD_KILL:
@@ -180,7 +182,82 @@ public class RileyRoverWS {
 			case CMD_PIVOT_DROIT:
 				System.out.println("CMD_PIVOT_DROIT");
 				break;
+				/*
+				 	gauche_avancer
+ 	gauche_reculer
+	droit_avancer
+	droit_reculer
+	pivot_gauche
+	pivot_droit 
+				*/
+			case CMD_NEUTRE:
+				System.out.println("CMD_NEUTRE");
+				break;
 			default:
+				System.out.println("Commande non reconnue...");
+				break;
+		}
+	}
+	
+	private void executeCommand(byte[] decoded) throws IOException {
+		byte cmd = decoded[0];
+		switch(cmd) {
+			case CMD_KILL:
+				System.out.println("CMD_KILL");
+				//close();
+				break;
+			case CMD_CLOSE:
+				System.out.println("CMD_CLOSE");
+				close();
+				break;
+			case CMD_STOP:
+				controller.stopper();
+				System.out.println("CMD_STOP");
+				break;
+			case CMD_MANUAL:
+				System.out.println("CMD_MANUAL");
+				break;
+			case CMD_REMOTE:
+				System.out.println("CMD_REMOTE");
+				break;
+			case CMD_AVANCER:
+				controller.avancer();
+				//System.out.println("CMD_AVANCER");
+				break;
+			case CMD_RECULER:
+				controller.reculer();
+				//System.out.println("CMD_RECULER");
+				break;
+			case CMD_GAUCHE_AVANCER:
+				controller.gauche_avancer();
+				//System.out.println("CMD_GAUCHE_AVANCER");
+				break;
+			case CMD_GAUCHE_RECULER:
+				controller.gauche_reculer();
+				//System.out.println("CMD_GAUCHE_RECULER");
+				break;
+			case CMD_DROIT_AVANCER:
+				controller.droit_avancer();
+				//System.out.println("CMD_DROIT_AVANCER");
+				break;
+			case CMD_DROIT_RECULER:
+				controller.droit_reculer();
+				//System.out.println("CMD_DROIT_RECULER");
+				break;
+			case CMD_PIVOT_GAUCHE:
+				controller.pivot_gauche();
+				//System.out.println("CMD_PIVOT_GAUCHE");
+				break;
+			case CMD_PIVOT_DROIT:
+				controller.pivot_droit();
+				//System.out.println("CMD_PIVOT_DROIT");
+				break;
+			case CMD_NEUTRE:
+				controller.ralentir();
+				//System.out.println("CMD_NEUTRE");
+				break;
+			default:
+				System.out.println("Commande non reconnue...");
 				break;
 		}
 	}
@@ -200,6 +277,7 @@ public class RileyRoverWS {
 				inputstream = client.getInputStream();
 				outputstream = client.getOutputStream();
 				handshake();
+				controller.init();
 				System.out.println("Télécommande connectée.");
 				System.out.println("Ecoute en cours...");
 				// https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
@@ -227,10 +305,9 @@ public class RileyRoverWS {
 					}
 					else {
 						executeCommand(decoded);
-						outputstream.write(byteCmdMsg(), 0, 5);
-						outputstream.flush();
+						//outputstream.write(byteCmdMsg(), 0, 5);
+						//outputstream.flush();
 					}
-					
 				}
 			} catch(IOException e) {
 				e.printStackTrace();
