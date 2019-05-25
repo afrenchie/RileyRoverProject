@@ -44,6 +44,24 @@ var ws_protocol = null;
 var ws_hostname = null;
 var ws_port = null;
 
+var cmd_kill = 255;         // 0b11111111 255 0xff
+var cmd_close = 240;        // 0b11110000 240 0xf0
+var cmd_manual = 224;       // 0b11100000 224 0xe0
+var cmd_remote = 192;       // 0b11000000 192 0xc0
+var cmd_stop = 0;           // 0b00000000 0   0x0
+var cmd_avancer = 3;        // 0b00000011 3   0x3
+var cmd_reculer = 12;       // 0b00001100 12  0xc
+var cmd_gauche_avancer = 1; // 0b00000001 1   0x1
+var cmd_gauche_reculer = 4; // 0b00000100 4   0x4
+var cmd_droit_avancer = 2;  // 0b00000010 2   0x2
+var cmd_droit_reculer = 8;  // 0b00001000 8   0x8
+var cmd_pivot_gauche = 9;   // 0b00001001 9   0x9
+var cmd_pivot_droit = 6;    // 0b00000110 6   0x6
+var cmd_neutre = 16;        // 0b00010000 16  0x10
+
+var thread_interval_id;
+var longInt8View = new Uint8Array(new ArrayBuffer(1));
+
 /**
  * Event handler for clicking on button "Connect"
  */
@@ -81,6 +99,7 @@ function openWSConnection(protocol, hostname, port) {
             document.getElementById("command_btn").disabled   = false;
             document.getElementById("btnConnect").disabled    = true;
             document.getElementById("btnDisconnect").disabled = false;
+            document.getElementById("btnRUN").disabled        = false;
         };
         webSocket.onclose = function (closeEvent) {
             console.log("WebSocket CLOSE: " + JSON.stringify(closeEvent, null, 4));
@@ -88,6 +107,7 @@ function openWSConnection(protocol, hostname, port) {
             document.getElementById("command_btn").disabled   = true;
             document.getElementById("btnConnect").disabled    = false;
             document.getElementById("btnDisconnect").disabled = true;
+            document.getElementById("btnRUN").disabled        = true;
         };
         webSocket.onerror = function (errorEvent) {
             console.log("WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4));
@@ -105,25 +125,98 @@ function openWSConnection(protocol, hostname, port) {
         console.error(exception);
     }
 }
+
+function isWebsocketReady(){
+  if (webSocket.readyState != WebSocket.OPEN) {
+      console.error("webSocket is not open: " + webSocket.readyState);
+      return false;
+  }
+  else {
+    return true;
+  }
+}
 /**
  * Send a message to the WebSocket server
  */
 function onMessageSendClick() {
-    if (webSocket.readyState != WebSocket.OPEN) {
-        console.error("webSocket is not open: " + webSocket.readyState);
+    if (! isWebsocketReady()) {
         return;
     }
     webSocket.send(document.getElementById("message_input").value);
 }
 
 function onCommandSendClick() {
-    if (webSocket.readyState != WebSocket.OPEN) {
-        console.error("webSocket is not open: " + webSocket.readyState);
-        return;
-    }
-    var longInt8View = new Uint8Array(new ArrayBuffer(1));
+  if (! isWebsocketReady()) {
+      return;
+  }
     longInt8View[0] = document.getElementById("command_input").value;
     webSocket.send(longInt8View);
+}
+
+function sendCommand(){
+    if (! isWebsocketReady()) {
+      stopCommandSending();
+      return;
+    }
+    longInt8View[0] = document.getElementById("commande_code").value;
+    webSocket.send(longInt8View);
+}
+
+function onRUNClick() {
+    document.getElementById("btnRUN").disabled   = true;
+    document.getElementById("btnSTOP").disabled   = false;
+    document.getElementById("commande_code").value = cmd_neutre;
+    thread_interval_id = window.setInterval(sendCommand, 500);
+}
+
+function stopCommandSending(){
+    document.getElementById("btnSTOP").disabled   = true;
+    document.getElementById("btnRUN").disabled   = false;
+    clearInterval(thread_interval_id);
+}
+
+function onSTOPClick() {
+    stopCommandSending();
+}
+
+function setNeutre() {
+    document.getElementById("commande_code").value = cmd_neutre;
+}
+
+function setAvancer() {
+    document.getElementById("commande_code").value = cmd_avancer;
+}
+
+function setReculer() {
+    document.getElementById("commande_code").value = cmd_reculer;
+}
+
+function setStopper() {
+    document.getElementById("commande_code").value = cmd_stop;
+}
+
+function setDroitA() {
+    document.getElementById("commande_code").value = cmd_droit_avancer;
+}
+
+function setDroitR() {
+    document.getElementById("commande_code").value = cmd_droit_reculer;
+}
+
+function setGaucheA() {
+    document.getElementById("commande_code").value = cmd_gauche_avancer;
+}
+
+function setGaucheR() {
+    document.getElementById("commande_code").value = cmd_gauche_reculer;
+}
+
+function setPDroit() {
+    document.getElementById("commande_code").value = cmd_pivot_droit;
+}
+
+function setPGauche() {
+    document.getElementById("commande_code").value = cmd_pivot_gauche;
 }
 
 </script>
@@ -145,7 +238,7 @@ function onCommandSendClick() {
       </tr>
       <tr>
           <td>WS Hostname</td>
-          <td><input type="text" id="hostname" value="127.0.0.1"/></td>
+          <td><input type="text" id="hostname" value="169.254.98.19"/></td>
       </tr>
       <tr>
           <td>WS Port</td>
@@ -181,11 +274,35 @@ function onCommandSendClick() {
       <tr>
           <td></td>
           <td>
-              <input id="command_btn" type="button" value="Send Message" disabled="disabled" onclick="onCommandSendClick()">
+              <input id="command_btn" type="button" value="Send Command" disabled="disabled" onclick="onCommandSendClick()">
           </td>
       </tr>
   </table><br/>
-  <textarea id="incomingMsgOutput" rows="10" cols="20" disabled="disabled"></textarea>
+   <textarea id="incomingMsgOutput" rows="3" cols="20" disabled="disabled"></textarea></br>
+  <!-- Systeme des commandes -->
+  <table>
+    <tr>
+    <td>
+    <p>Commande actuelle <input type="text" id="commande_code"/></p>
+
+    <input id="btnSetNeutre" type="button" value="Neutre" onclick="setNeutre()">
+    <input id="btnSetAvancer" type="button" value="Avancer" onclick="setAvancer()">
+    <input id="btnSetReculer" type="button" value="Reculler" onclick="setReculer()">
+    <input id="btnSetStopper" type="button" value="Stopper" onclick="setStopper()">
+
+    <input id="btnSetDroitA" type="button" value="Avancer Droit" onclick="setDroitA()">
+    <input id="btnSetDroitR" type="button" value="Reculer Droit" onclick="setDroitR()">
+    <input id="btnSetGaucheA" type="button" value="Avancer Gauche" onclick="setGaucheA()">
+    <input id="btnSetGaucheR" type="button" value="Reculer Gauche" onclick="setGaucheR()">
+
+    <input id="btnSetPDroit" type="button" value="PDroit" onclick="setPDroit()">
+    <input id="btnSetPGauche" type="button" value="PGauche" onclick="setPGauche()">
+
+    <input id="btnRUN" type="button" value="RUN" onclick="onRUNClick()" disabled>
+    <input id="btnSTOP" type="button" value="STOP" onclick="onSTOPClick()" disabled>
+    </td>
+    </tr>
+  </table>
 
 </body>
 </html>
