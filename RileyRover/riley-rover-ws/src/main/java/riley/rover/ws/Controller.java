@@ -62,6 +62,7 @@ public class Controller {
 				mA.stop();
 				mB.forward();
 			}
+			prev_cmd = 1;
 		}
 	}
 	
@@ -74,6 +75,7 @@ public class Controller {
 				mA.stop();
 				mB.backward();
 			}
+			prev_cmd = 4;
 		}
 	}
 	
@@ -86,6 +88,7 @@ public class Controller {
 				mB.stop();
 				mA.forward();
 			}
+			prev_cmd = 2;
 		}
 	}
 
@@ -98,6 +101,7 @@ public class Controller {
 				mB.stop();
 				mA.backward();
 			}
+			prev_cmd = 8;
 		}
 	}
 	
@@ -110,6 +114,7 @@ public class Controller {
 				mB.forward();
 				mA.backward();
 			}
+			prev_cmd = 9;
 		}
 	}
 	
@@ -122,15 +127,7 @@ public class Controller {
 				mA.forward();
 				mB.backward();
 			}
+			prev_cmd = 6;
 		}
 	}
-
-	/*
-	var cmd_gauche_avancer = 1; // 0b00000001 1   0x1
-	var cmd_gauche_reculer = 4; // 0b00000100 4   0x4
-	var cmd_droit_avancer = 2;  // 0b00000010 2   0x2
-	var cmd_droit_reculer = 8;  // 0b00001000 8   0x8
-	var cmd_pivot_gauche = 9;   // 0b00001001 9   0x9
-	var cmd_pivot_droit = 6;    // 0b00000110 6   0x6
-	*/
 }
