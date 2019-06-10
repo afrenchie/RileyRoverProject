@@ -1,7 +1,5 @@
 package riley.rover.ws;
 
-//import java.nio.charset.StandardCharsets;
-
 public class Main {
 
 	public static void main(final String[] args) {
@@ -9,7 +7,7 @@ public class Main {
 
 		RileyRoverWS s;
 		try {
-			s = new RileyRoverWS();
+			s = new RileyRoverWS(80);
 			s.run();
 		} catch (Exception e) {
 			System.out.println(e);
