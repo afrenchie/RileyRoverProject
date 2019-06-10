@@ -1,4 +1,5 @@
 package riley.rover.ws;
+import static riley.rover.ws.Commands.*;
 
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -15,119 +16,112 @@ public class Controller {
 		mA.brake();
 		mB.setSpeed(200);
 		mB.brake();	
-		prev_cmd = 16;
-		//System.out.println("init");
+		prev_cmd = CMD_NEUTRE;
 	}
 	
 	public void ralentir() {
 		mA.brake();
 		mB.brake();
-		prev_cmd = 16;
-		//System.out.println("ralentir");
+		prev_cmd = CMD_NEUTRE;
 	}
 	
 	public void stopper() {
 		mA.stop();
 		mB.stop();
-		prev_cmd = 0;
-		//System.out.println("stopper");
+		prev_cmd = CMD_STOP;
 	}
 	
 	public void avancer() {
-		if (prev_cmd != 3) {
-			stopper();
+		if (prev_cmd != CMD_AVANCER) {
 			mA.forward();
 			mB.forward();
-			prev_cmd = 3;
+			prev_cmd = CMD_AVANCER;
 		}
-		//System.out.println("avancer");
 	}
 	
 	public void reculer() {
-		if (prev_cmd != 12) {
-			stopper();
+		if (prev_cmd != CMD_RECULER) {
 			mA.backward();
 			mB.backward();
-			prev_cmd = 12;
+			prev_cmd = CMD_RECULER;
 		}
-		//System.out.println("reculer");
 	}
 	
 	public void gauche_avancer() {
-		if (prev_cmd != 1) {
-			if(prev_cmd == 9 || prev_cmd == 3) {
+		if (prev_cmd != CMD_GAUCHE_AVANCER) {
+			if(prev_cmd == CMD_PIVOT_GAUCHE || prev_cmd == CMD_AVANCER) {
 				mA.stop();
 			}
 			else {
 				mA.stop();
 				mB.forward();
 			}
-			prev_cmd = 1;
+			prev_cmd = CMD_GAUCHE_AVANCER;
 		}
 	}
 	
 	public void gauche_reculer() {
-		if (prev_cmd != 4) {
-			if(prev_cmd == 12 || prev_cmd == 6) {
+		if (prev_cmd != CMD_GAUCHE_RECULER) {
+			if(prev_cmd == CMD_RECULER || prev_cmd == CMD_PIVOT_DROIT) {
 				mA.stop();
 			}
 			else {
 				mA.stop();
 				mB.backward();
 			}
-			prev_cmd = 4;
+			prev_cmd = CMD_GAUCHE_RECULER;
 		}
 	}
 	
 	public void droit_avancer() {
-		if (prev_cmd != 2) {
-			if(prev_cmd == 6 || prev_cmd == 3) {
+		if (prev_cmd != CMD_DROIT_AVANCER) {
+			if(prev_cmd == CMD_PIVOT_DROIT || prev_cmd == CMD_AVANCER) {
 				mB.stop();
 			}
 			else {
 				mB.stop();
 				mA.forward();
 			}
-			prev_cmd = 2;
+			prev_cmd = CMD_DROIT_AVANCER;
 		}
 	}
 
 	public void droit_reculer() {
-		if (prev_cmd != 8) {
-			if(prev_cmd == 12 || prev_cmd == 9) {
+		if (prev_cmd != CMD_DROIT_RECULER) {
+			if(prev_cmd == CMD_RECULER || prev_cmd == CMD_PIVOT_GAUCHE) {
 				mB.stop();
 			}
 			else {
 				mB.stop();
 				mA.backward();
 			}
-			prev_cmd = 8;
+			prev_cmd = CMD_DROIT_RECULER;
 		}
 	}
 	
 	public void pivot_gauche() {
-		if (prev_cmd != 9) {
-			if(prev_cmd == 1 || prev_cmd == 3) {
+		if (prev_cmd != CMD_PIVOT_GAUCHE) {
+			if(prev_cmd == CMD_GAUCHE_AVANCER || prev_cmd == CMD_AVANCER) {
 				mB.forward();
 			}
 			else {
 				mB.forward();
 				mA.backward();
 			}
-			prev_cmd = 9;
+			prev_cmd = CMD_PIVOT_GAUCHE;
 		}
 	}
 	
 	public void pivot_droit() {
-		if (prev_cmd != 6) {
-			if(prev_cmd == 2 || prev_cmd == 3) {
+		if (prev_cmd != CMD_PIVOT_DROIT) {
+			if(prev_cmd == CMD_DROIT_AVANCER || prev_cmd == CMD_AVANCER) {
 				mA.forward();
 			}
 			else {
 				mA.forward();
 				mB.backward();
 			}
-			prev_cmd = 6;
+			prev_cmd = CMD_PIVOT_DROIT;
 		}
 	}
 }
