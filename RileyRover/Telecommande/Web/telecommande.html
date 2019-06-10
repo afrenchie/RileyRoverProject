@@ -4,157 +4,459 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 
+body, html  {
+  height: 100%;
+  margin: 0;
+  background-color:#060470;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 
-
-table {
+table  {
   width: 100%;
   text-align: center;
 }
 
-.butt {
-    border: 1px outset blue;
-    background-color: lightBlue;
-    height:50px;
-    width:50px;
-    cursor:pointer;
+.top-table {
+  text-align: left;
 }
 
-.butt:hover {
-   background-color: blue;
-   color:white;
+.menu-panel {
+  background-color:#060470;
+  display: none;
+  position : absolute;
+  height : 100%;
+  width : 100%;
 }
+
+.menu-panel .div-btn {
+  text-align: center;
+}
+
+.menu-panel .btn-menu {
+  margin-top: 10px;
+}
+
+.nrw-text  {
+  color : #FF24F1;
+  padding: 4px;
+  font-family: AndaleMono, Arial, Helvetica, sans-serif;
+  font-size: 24px;
+}
+
+.nrw-textarea, .cmd-input{
+  background-color:#060470;
+  border: none;
+}
+
+.small-text {
+  font-size: 14px;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
+
+.menu-input  {
+  background-color: transparent;
+  font-size: 22px;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 2px;
+  border-left-width: 0px;
+  border-bottom-color : #FF24F1;
+}
+
+.board-panel  {
+  height : 40%;
+}
+
+.grid-panel  {
+  height : 60%;
+  background-image:url("ICONS/Grid.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.btn {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: Transparent;
+  border: none;
+  width : 104px;
+  height : 92px;
+  cursor:pointer;
+}
+
+.btn-menu {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: Transparent;
+  border: none;
+  cursor:pointer;
+}
+
+.btn-menu-small {
+  width : 135px;
+  height : 51px;
+}
+
+.btn-menu-big {
+  width : 188px;
+  height : 51px;
+}
+
+#cmd_div {
+  text-align: center;
+}
+
+#cmd_div input {
+  text-align: center;
+}
+
+#btn-menu-panel {
+  background-image:url("ICONS/Menu.png");
+}
+
+#btn-save {
+  background-image:url("ICONS/Save.png");
+}
+
+#btn-connect {
+  background-image:url("ICONS/Connect.png");
+}
+
+#btn-disconnect {
+  background-image:url("ICONS/Disconnect.png");
+}
+
+.forward {
+  background-image:url("ICONS/Unpushed_forward.png");
+}
+
+.forward-active {
+  background-image:url("ICONS/Pushed_forward.png");
+}
+
+.forward:disabled {
+  background-image:url("ICONS/Inactive_forward.png");
+}
+
+.backward {
+  background-image:url("ICONS/Unpushed_backward.png");
+}
+
+.backward-active {
+  background-image:url("ICONS/Pushed_backward.png");
+}
+
+.backward:disabled {
+  background-image:url("ICONS/Inactive_backward.png");
+}
+
+.stop {
+  background-image:url("ICONS/Unpushed_stop.png");
+}
+
+.stop:active {
+  background-image:url("ICONS/Pushed_stop.png");
+}
+
 
 </style>
 </head>
 <body>
+<div id="menu" class="menu-panel" >
+  <label class="nrw-text" for="hostname">Hostname : </label><input maxlength="15" class="menu-input nrw-text" type="text" id="hostname" value=""/><br>
+  <label class="nrw-text" for="port">Port : </label><input maxlength="4" class="menu-input nrw-text" type="text" id="port" value="9000"/><br>
+  <div class="div-btn">
+    <input id="btn-connect" class="btn-menu btn-menu-small" type="button" onclick="onConnectClick()"><br>
+    <input id="btn-disconnect" class="btn-menu btn-menu-big" type="button" onclick="onDisconnectClick()"><br>
+    <input id="btn-save" class="btn-menu btn-menu-small" type="button" onclick="hideMenuPanel()">
+  </div>
+  <p class="nrw-text">Console : </p>
+  <textarea class="nrw-text nrw-textarea" id="log" rows="30%" cols="100%" disabled="disabled"></textarea></br>
+</div>
+<div id="board" class="board-panel">
+  <table class="top-table">
+    <tr>
+      <td rowspan="2">
+        <input id="btn-menu-panel" class="btn-menu btn-menu-small" type="button" onclick="showMenuPanel()">
+      </td>
+      <td>
+        <p class="nrw-text small-text">Robot-connection : <span id="wscurstate">off</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="nrw-text small-text">Battery : <span id="wscurstate">no-data</span></p>
+      </td>
+    </tr>
+  </table>
+  <div id="cmd_div">
+    <input width="3" id="commande_code" class="nrw-text cmd-input" disabled="disabled" value="0"/>
+  </div>
+</div>
+<div id="grid" class="grid-panel">
+  <table>
+    <tr>
+      <td><input id="btn-forward-left" class="btn forward" type="button" onclick=""></td>
+      <td></td>
+      <td><input id="btn-forward-right" class="btn forward" type="button" onclick=""/></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><input id="stop" class="btn stop" type="button"/></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><input id="btn-backward-left" class="btn backward" type="button" onclick=""/></td>
+      <td></td>
+      <td><input id="btn-backward-right" class="btn backward" type="button" onclick=""/></td>
+    </tr>
+  </table>
+</div>
 
-<h1>Telecommande V2</h1>
-
-<table>
-  <tr>
-    <td><input id="up-left" class="butt" type="button" value="^"/></td>
-    <td></td>
-    <td><input id="up-right" class="butt" type="button" value="^"/></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><input id="stop" class="butt" type="button" value="stop"/></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><input id="down-left" class="butt" type="button" value="v"/></td>
-    <td></td>
-    <td><input id="down-right" class="butt" type="button" value="v"/></td>
-  </tr>
-</table>
-<p>Etat du WS : <span id="wscurstate">off</span></p>
-<p>Message reçu : <span id="message">off</span></p>
-<input id="startWSbutton" type="button" value="Start SW" onclick="startWS();" disabled/>
-<input id="stopWSbutton" type="button" value="Start SW" onclick="stopWS();" />
-<input id="sendToWSbutton" type="button" value="Send to WS" onclick="sendToWS();" />
-<input id="wsinput" type="text"/>
-<input id="wsstate" type="hidden" value="off"/>
 <script>
+//Ajout de la console dans le menu
+//https://stackoverflow.com/questions/20256760/javascript-console-log-to-html
+(function () {
+    var old = console.log;
+    var logger = document.getElementById('log');
+    console.log = function (message) {
+        if (typeof message == 'object') {
+            logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(message) : message) + '<br />';
+        } else {
+            logger.innerHTML += message + '<br />';
+        }
+    }
+})();
 
-/*
-https://developer.mozilla.org/fr/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications#Envoi_de_données_vers_le_serveur
-*/
+var cmd_kill = 255;         // 0b11111111 255 0xff
+var cmd_close = 240;        // 0b11110000 240 0xf0
+var cmd_manual = 224;       // 0b11100000 224 0xe0
+var cmd_remote = 192;       // 0b11000000 192 0xc0
+var cmd_neutre = 0;           // 0b00000000 0   0x0
+var cmd_avancer = 3;        // 0b00000011 3   0x3
+var cmd_reculer = 12;       // 0b00001100 12  0xc
+var cmd_gauche_avancer = 1; // 0b00000001 1   0x1
+var cmd_gauche_reculer = 4; // 0b00000100 4   0x4
+var cmd_droit_avancer = 2;  // 0b00000010 2   0x2
+var cmd_droit_reculer = 8;  // 0b00001000 8   0x8
+var cmd_pivot_gauche = 9;   // 0b00001001 9   0x9
+var cmd_pivot_droit = 6;    // 0b00000110 6   0x6
+var cmd_stop = 16;        // 0b00010000 16  0x10
 
-var startWSbutton = document.getElementById("startWSbutton");
-var stopWSbutton = document.getElementById("stopWSbutton");
-var wscurstateText = document.getElementById("wscurstate");
-var messageText = document.getElementById("message");
-var wsstateText = document.getElementById("wsinput");
-var wsstate = document.getElementById("wsstate");
-var roverSocket = new WebSocket("ws://169.254.192.74:9000");
+var btn_forward_left = document.getElementById("btn-forward-left");
+var btn_forward_right = document.getElementById("btn-forward-right");
+var btn_backward_left = document.getElementById("btn-backward-left");
+var btn_backward_right = document.getElementById("btn-backward-right");
+var btn_stop = document.getElementById("btn-stop");
 
-function sendToWS() {
-    var text = wsstateText.value;
-    if (text){
-      console.log("sending data : "+text);
-      text = text + "\n";
-      roverSocket.send(text);
+
+/* Les évenements des boutons */
+
+btn_forward_left.addEventListener("touchstart", touchstart_btn_forward_left, false);
+btn_forward_left.addEventListener("touchend", touchend_btn_forward_left, false);
+
+function touchstart_btn_forward_left(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-forward-left").classList.replace("forward","forward-active");
+  document.getElementById("btn-backward-left").disabled = true;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_gauche_avancer;
+}
+
+function touchend_btn_forward_left(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-forward-left").classList.replace("forward-active","forward");
+  document.getElementById("btn-backward-left").disabled = false;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_gauche_avancer;
+}
+
+btn_forward_right.addEventListener("touchstart", touchstart_btn_forward_right, false);
+btn_forward_right.addEventListener("touchend", touchend_btn_forward_right, false);
+
+function touchstart_btn_forward_right(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-forward-right").classList.replace("forward","forward-active");
+  document.getElementById("btn-backward-right").disabled = true;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_droit_avancer;
+}
+
+function touchend_btn_forward_right(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-forward-right").classList.replace("forward-active","forward");
+  document.getElementById("btn-backward-right").disabled = false;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_droit_avancer;
+}
+
+btn_backward_left.addEventListener("touchstart", touchstart_btn_backward_left, false);
+btn_backward_left.addEventListener("touchend", touchend_btn_backward_left, false);
+
+function touchstart_btn_backward_left(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-backward-left").classList.replace("forward","forward-active");
+  document.getElementById("btn-forward-left").disabled = true;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_gauche_reculer;
+}
+
+function touchend_btn_backward_left(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-backward-left").classList.replace("forward-active","forward");
+  document.getElementById("btn-forward-left").disabled = false;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_gauche_reculer;
+}
+
+btn_backward_right.addEventListener("touchstart", touchstart_btn_backward_right, false);
+btn_backward_right.addEventListener("touchend", touchend_btn_backward_right, false);
+
+function touchstart_btn_backward_right(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-backward-right").classList.replace("forward","forward-active");
+  document.getElementById("btn-forward-right").disabled = true;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_droit_reculer;
+}
+
+function touchend_btn_backward_right(evt) {
+  evt.preventDefault();
+  document.getElementById("btn-backward-right").classList.replace("forward-active","forward");
+  document.getElementById("btn-forward-right").disabled = false;
+  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_droit_reculer;
+}
+
+/*Le menu du haut*/
+function showMenuPanel(){
+  document.getElementById("menu").style.display = "block";
+  document.getElementById("grid").style.display = "none";
+  document.getElementById("board").style.display = "none";
+}
+
+function hideMenuPanel(){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("grid").style.display = "block";
+  document.getElementById("board").style.display = "block";
+}
+
+/*La partie connexion*/
+var webSocket = null;
+var ws_protocol = null;
+var ws_hostname = null;
+var ws_port = null;
+
+var CMD_INTERVAL = 500;
+
+/*Les commandes*/
+var cmd_kill = 255;         // 0b11111111 255 0xff
+var cmd_close = 240;        // 0b11110000 240 0xf0
+var cmd_manual = 224;       // 0b11100000 224 0xe0
+var cmd_remote = 192;       // 0b11000000 192 0xc0
+var cmd_stop = 16;          // 0b00010000 16  0x10
+var cmd_avancer = 3;        // 0b00000011 3   0x3
+var cmd_reculer = 12;       // 0b00001100 12  0xc
+var cmd_gauche_avancer = 1; // 0b00000001 1   0x1
+var cmd_gauche_reculer = 4; // 0b00000100 4   0x4
+var cmd_droit_avancer = 2;  // 0b00000010 2   0x2
+var cmd_droit_reculer = 8;  // 0b00001000 8   0x8
+var cmd_pivot_gauche = 9;   // 0b00001001 9   0x9
+var cmd_pivot_droit = 6;    // 0b00000110 6   0x6
+var cmd_neutre = 0;         // 0b00000000 0   0x0
+
+var thread_interval_id;
+var longInt8View = new Uint8Array(new ArrayBuffer(1));
+
+/**
+ * Event handler for clicking on button "Connect"
+ */
+function onConnectClick() {
+    //ws_protocol = document.getElementById("protocol").value;
+    ws_protocol = "ws";
+    ws_hostname = document.getElementById("hostname").value;
+    ws_port     = document.getElementById("port").value;
+    openWSConnection(ws_protocol, ws_hostname, ws_port);
+}
+
+/**
+ * Event handler for clicking on button "Disconnect"
+ */
+function onDisconnectClick() {
+    STOP();
+    var longInt8View = new Uint8Array(new ArrayBuffer(1));
+    longInt8View[0] = cmd_close;
+    webSocket.send(longInt8View);
+    webSocket.close();
+}
+
+/**
+ * Open a new WebSocket connection using the given parameters
+ */
+function openWSConnection(protocol, hostname, port) {
+    var webSocketURL = null;
+    webSocketURL = protocol + "://" + hostname + ":" + port;
+    console.log("Connecting to : " + webSocketURL);
+    try {
+        webSocket = new WebSocket(webSocketURL);
+        webSocket.onopen = function(openEvent) {
+            console.log("WebSocket OPEN: " + JSON.stringify(openEvent, null, 4));
+            document.getElementById("wscurstate").innerHTML   = "on";
+            RUN();
+        };
+        webSocket.onclose = function (closeEvent) {
+            console.log("WebSocket CLOSE: " + JSON.stringify(closeEvent, null, 4));
+            document.getElementById("wscurstate").innerHTML   = "off";
+        };
+        webSocket.onerror = function (errorEvent) {
+            console.log("WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4));
+            STOP();
+        };
+        webSocket.onmessage = function (messageEvent) {
+            var wsMsg = messageEvent.data;
+            console.log("WebSocket MESSAGE: " + wsMsg);
+            if (wsMsg.indexOf("error") > 0) {
+                document.getElementById("log").value += "error: " + wsMsg.error + "\r\n";
+            } else {
+                document.getElementById("log").value += "message: " + wsMsg + "\r\n";
+            }
+        };
+    } catch (exception) {
+        console.error(exception);
     }
 }
 
-function stopWS() {
-  stopWSbutton.disabled = true;
-  wsstate.value = "off";
-  roverSocket.close();
+function isWebsocketReady(){
+  if (webSocket.readyState != WebSocket.OPEN) {
+      console.error("webSocket is not open: " + webSocket.readyState);
+      return false;
+  }
+  else {
+    return true;
+  }
 }
 
-function startWS(){
-  console.log("Starting WS");
-  roverSocket = new WebSocket("ws://169.254.192.74:9000");
-  startWSbutton.disabled = true;
-  wsstate.value = "on";
-  var serverOn = true;
-
-}
-
-function sendStuff() {
-    console.log("sending");
-    roverSocket.send("1\n");
-}
-
-// Assume we are connected
-roverSocket.onopen = function(event) {
-  console.log("WebSocket is open now.");
-  wscurstateText.innerHTML = "on";
-  stopWSbutton.disabled = false;
-  //window.setInterval(sendStuff, 500);
-};
-
-roverSocket.onmessage = function (event) {
-  console.log("message :");
-  console.log(event.data);
-  stateText.innerHTML = event.data;
-}
-
-roverSocket.onclose = function (event) {
-  wscurstateText.innerHTML = "off";
-  startWSbutton.disabled = false;
-  console.log("WebSocket is closed.");
-};
-
-
-
-
-/*
-https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
-*/
-
-/*
-var keys = [];
-document.body.innerHTML = "Keys currently pressed: "
-window.addEventListener("keydown",
-    function(e){
-        keys[e.keyCode] = e.keyCode;
-        var keysArray = getNumberArray(keys);
-        document.body.innerHTML = "Keys currently pressed:" + keysArray;
-        if(keysArray.toString() == "17,65"){
-            document.body.innerHTML += " Select all!"
-        }
-    },
-false);
-
-window.addEventListener('keyup',
-    function(e){
-        keys[e.keyCode] = false;
-        document.body.innerHTML = "Keys currently pressed: " + getNumberArray(keys);
-    },
-false);
-
-function getNumberArray(arr){
-    var newArr = new Array();
-    for(var i = 0; i < arr.length; i++){
-        if(typeof arr[i] == "number"){
-            newArr[newArr.length] = arr[i];
-        }
+/**
+ * Send a message to the WebSocket server
+ */
+function sendCommand(){
+    if (! isWebsocketReady()) {
+      STOP();
+      return;
     }
-    return newArr;
+    longInt8View[0] = document.getElementById("commande_code").value;
+    webSocket.send(longInt8View);
 }
-*/
+
+function RUN() {
+    document.getElementById("commande_code").value = 0;
+    thread_interval_id = window.setInterval(sendCommand, CMD_INTERVAL);
+}
+
+function STOP() {
+    clearInterval(thread_interval_id);
+}
+
 
 </script>
 
