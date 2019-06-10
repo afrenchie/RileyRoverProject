@@ -1,4 +1,5 @@
 package riley.rover.ws;
+import static riley.rover.ws.Commands.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,7 +7,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
@@ -21,39 +21,52 @@ public class RileyRoverWS {
 	public static Logger LOGGER = LoggerFactory.getLogger(RileyRoverWS.class);
 	private static String HANDSHAKEKEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 	public static final int PORT = 9000;
+
 	//Timeout de 30 secondes
 	public static final int READ_TIMEOUT = 30000;
 	private ServerSocket serversocket;
 	private Socket client;
 	private InputStream inputstream;
 	private OutputStream outputstream;
-
-	private final byte CMD_KILL = (byte)           0b11111111; //255 0xFF
-	private final byte CMD_CLOSE = (byte)          0b11110000; //240 0xF0
-	private final byte CMD_MANUAL = (byte)         0b11100000; //224 0xE0
-	private final byte CMD_REMOTE = (byte)         0b11000000; //192 0xC0
-	private final byte CMD_STOP = (byte)           0b00000000; //0   0x0
-	private final byte CMD_AVANCER = (byte)        0b00000011; //3   0x3
-	private final byte CMD_RECULER = (byte)        0b00001100; //12  0xC
-	private final byte CMD_GAUCHE_AVANCER = (byte) 0b00000001; //1   0x1
-	private final byte CMD_GAUCHE_RECULER = (byte) 0b00000100; //4   0x4
-	private final byte CMD_DROIT_AVANCER = (byte)  0b00000010; //2   0x2
-	private final byte CMD_DROIT_RECULER = (byte)  0b00001000; //8   0x8
-	private final byte CMD_PIVOT_GAUCHE = (byte)   0b00001001; //9   0x9
-	private final byte CMD_PIVOT_DROIT = (byte)    0b00000110; //6   0x6
-	private final byte CMD_NEUTRE = (byte)         0b00010000; //16  0x10
-	
+	private int port;
 	private Controller controller;
 	
-	public RileyRoverWS() throws IOException {
+	public RileyRoverWS(int port) throws IOException {
+		try {
+			init(port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public RileyRoverWS()  {
+		try {
+			init(PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void init(int port) throws IOException{
 		controller = new Controller();
 		System.out.println("Creation du serveur");
 		LOGGER.info("Creation du serveur");
-		serversocket = new ServerSocket(PORT);
+		this.port = port;
+		serversocket = new ServerSocket(port);
 		System.out.println("Creation terminee");
 		LOGGER.info("Creation terminee");
+		System.out.println("Ecoute sur le port "+port);
+		LOGGER.info("Ecoute sur le port "+port);
 	}
-
+	
+	public void setPort(int port) {
+		this.port = port;
+	}
+	
+	public int getPort() {
+		return port;
+	}
+	
 	private String encode(String key) throws Exception {
 		byte[] bytes = MessageDigest.getInstance("SHA-1").digest(key.getBytes("UTF-8"));
 		return Base64.getEncoder().encodeToString(bytes);
@@ -182,19 +195,11 @@ public class RileyRoverWS {
 			case CMD_PIVOT_DROIT:
 				System.out.println("CMD_PIVOT_DROIT");
 				break;
-				/*
-				 	gauche_avancer
- 	gauche_reculer
-	droit_avancer
-	droit_reculer
-	pivot_gauche
-	pivot_droit 
-				*/
 			case CMD_NEUTRE:
 				System.out.println("CMD_NEUTRE");
 				break;
 			default:
-				System.out.println("Commande non reconnue...");
+				System.out.println("UNKNOWN");
 				break;
 		}
 	}
@@ -222,39 +227,30 @@ public class RileyRoverWS {
 				break;
 			case CMD_AVANCER:
 				controller.avancer();
-				//System.out.println("CMD_AVANCER");
 				break;
 			case CMD_RECULER:
 				controller.reculer();
-				//System.out.println("CMD_RECULER");
 				break;
 			case CMD_GAUCHE_AVANCER:
 				controller.gauche_avancer();
-				//System.out.println("CMD_GAUCHE_AVANCER");
 				break;
 			case CMD_GAUCHE_RECULER:
 				controller.gauche_reculer();
-				//System.out.println("CMD_GAUCHE_RECULER");
 				break;
 			case CMD_DROIT_AVANCER:
 				controller.droit_avancer();
-				//System.out.println("CMD_DROIT_AVANCER");
 				break;
 			case CMD_DROIT_RECULER:
 				controller.droit_reculer();
-				//System.out.println("CMD_DROIT_RECULER");
 				break;
 			case CMD_PIVOT_GAUCHE:
 				controller.pivot_gauche();
-				//System.out.println("CMD_PIVOT_GAUCHE");
 				break;
 			case CMD_PIVOT_DROIT:
 				controller.pivot_droit();
-				//System.out.println("CMD_PIVOT_DROIT");
 				break;
 			case CMD_NEUTRE:
 				controller.ralentir();
-				//System.out.println("CMD_NEUTRE");
 				break;
 			default:
 				System.out.println("Commande non reconnue...");
@@ -295,7 +291,6 @@ public class RileyRoverWS {
 					else
 						continue;
 					lastCommand = System.currentTimeMillis();
-					System.out.println("lastCommand " + lastCommand);
 					decoded = readBytes();
 					
 					if (! cmd) {

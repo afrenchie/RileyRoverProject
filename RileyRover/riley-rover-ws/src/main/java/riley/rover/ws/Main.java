@@ -9,7 +9,7 @@ public class Main {
 
 		RileyRoverWS s;
 		try {
-			s = new RileyRoverWS();
+			s = new RileyRoverWS(80);
 			s.run();
 		} catch (Exception e) {
 			System.out.println(e);
