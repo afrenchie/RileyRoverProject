@@ -1,7 +1,5 @@
 package riley.rover.ws;
 
-//import java.nio.charset.StandardCharsets;
-
 public class Main {
 
 	public static void main(final String[] args) {
