@@ -195,14 +195,6 @@ public class RileyRoverWS {
 			case CMD_PIVOT_DROIT:
 				System.out.println("CMD_PIVOT_DROIT");
 				break;
-				/*
-				 	gauche_avancer
- 	gauche_reculer
-	droit_avancer
-	droit_reculer
-	pivot_gauche
-	pivot_droit 
-				*/
 			case CMD_NEUTRE:
 				System.out.println("CMD_NEUTRE");
 				break;
