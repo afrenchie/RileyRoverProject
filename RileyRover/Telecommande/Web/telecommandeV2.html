@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Example :
+Inspiré de l'exemple :
 https://www.pegaxchange.com/2018/03/23/websocket-client/
 -->
 <head>
@@ -48,7 +48,7 @@ var cmd_kill = 255;         // 0b11111111 255 0xff
 var cmd_close = 240;        // 0b11110000 240 0xf0
 var cmd_manual = 224;       // 0b11100000 224 0xe0
 var cmd_remote = 192;       // 0b11000000 192 0xc0
-var cmd_stop = 0;           // 0b00000000 0   0x0
+var cmd_neutre = 0;         // 0b00000000 0   0x0
 var cmd_avancer = 3;        // 0b00000011 3   0x3
 var cmd_reculer = 12;       // 0b00001100 12  0xc
 var cmd_gauche_avancer = 1; // 0b00000001 1   0x1
@@ -57,7 +57,7 @@ var cmd_droit_avancer = 2;  // 0b00000010 2   0x2
 var cmd_droit_reculer = 8;  // 0b00001000 8   0x8
 var cmd_pivot_gauche = 9;   // 0b00001001 9   0x9
 var cmd_pivot_droit = 6;    // 0b00000110 6   0x6
-var cmd_neutre = 16;        // 0b00010000 16  0x10
+var stop = 16;              // 0b00010000 16  0x10
 
 var thread_interval_id;
 var longInt8View = new Uint8Array(new ArrayBuffer(1));
