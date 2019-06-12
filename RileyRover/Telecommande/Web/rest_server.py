@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Notes importantes : 
+# Version de tornado == 5.1.1
+# Si projet deployé à partir d'un .sh (execution au boot), 
+# il faut changer le path des images ./ICONS/ en /home/.../ICONS/
+
 
 from tornado import websocket, web, ioloop
 
