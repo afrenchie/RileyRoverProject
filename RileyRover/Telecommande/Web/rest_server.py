@@ -18,7 +18,7 @@ class TelecommandeHandler(web.RequestHandler):
 class DevTelecommandeHandler(TelecommandeHandler):
     def get(self, *args):
         print('connection ! from : '+self.remote_ip)
-        self.render("./telecommandeV2.html")
+        self.render("./telecommandedev.html")
 
 app = web.Application([
     (r'/telecommande', TelecommandeHandler),
