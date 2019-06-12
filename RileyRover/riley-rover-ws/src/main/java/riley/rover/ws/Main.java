@@ -1,9 +1,16 @@
 package riley.rover.ws;
 
-//import java.nio.charset.StandardCharsets;
-
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Main.
+ */
 public class Main {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(final String[] args) {
 		System.out.println("Demarrage ...");
 

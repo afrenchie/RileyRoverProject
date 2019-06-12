@@ -4,11 +4,24 @@ import static riley.rover.ws.Commands.*;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Controller.
+ */
 public class Controller {
+	
+	/** The left motor */
 	private EV3LargeRegulatedMotor mA;
+	
+	/** The right motor */
 	private EV3LargeRegulatedMotor mB;
+	
+	/** The prev cmd. */
 	private int prev_cmd;
 	
+	/**
+	 * Inits the.
+	 */
 	public void init() {
 		mA = new EV3LargeRegulatedMotor(MotorPort.A);
 		mB = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -19,18 +32,27 @@ public class Controller {
 		prev_cmd = CMD_NEUTRE;
 	}
 	
+	/**
+	 * Ralentir.
+	 */
 	public void ralentir() {
 		mA.brake();
 		mB.brake();
 		prev_cmd = CMD_NEUTRE;
 	}
 	
+	/**
+	 * Stopper.
+	 */
 	public void stopper() {
 		mA.stop();
 		mB.stop();
 		prev_cmd = CMD_STOP;
 	}
 	
+	/**
+	 * Avancer.
+	 */
 	public void avancer() {
 		if (prev_cmd != CMD_AVANCER) {
 			mA.forward();
@@ -39,6 +61,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Reculer.
+	 */
 	public void reculer() {
 		if (prev_cmd != CMD_RECULER) {
 			mA.backward();
@@ -47,6 +72,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Gauche avancer.
+	 */
 	public void gauche_avancer() {
 		if (prev_cmd != CMD_GAUCHE_AVANCER) {
 			if(prev_cmd == CMD_PIVOT_GAUCHE || prev_cmd == CMD_AVANCER) {
@@ -60,6 +88,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Gauche reculer.
+	 */
 	public void gauche_reculer() {
 		if (prev_cmd != CMD_GAUCHE_RECULER) {
 			if(prev_cmd == CMD_RECULER || prev_cmd == CMD_PIVOT_DROIT) {
@@ -73,6 +104,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Droit avancer.
+	 */
 	public void droit_avancer() {
 		if (prev_cmd != CMD_DROIT_AVANCER) {
 			if(prev_cmd == CMD_PIVOT_DROIT || prev_cmd == CMD_AVANCER) {
@@ -86,6 +120,9 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Droit reculer.
+	 */
 	public void droit_reculer() {
 		if (prev_cmd != CMD_DROIT_RECULER) {
 			if(prev_cmd == CMD_RECULER || prev_cmd == CMD_PIVOT_GAUCHE) {
@@ -99,6 +136,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Pivot gauche.
+	 */
 	public void pivot_gauche() {
 		if (prev_cmd != CMD_PIVOT_GAUCHE) {
 			if(prev_cmd == CMD_GAUCHE_AVANCER || prev_cmd == CMD_AVANCER) {
@@ -112,6 +152,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Pivot droit.
+	 */
 	public void pivot_droit() {
 		if (prev_cmd != CMD_PIVOT_DROIT) {
 			if(prev_cmd == CMD_DROIT_AVANCER || prev_cmd == CMD_AVANCER) {
