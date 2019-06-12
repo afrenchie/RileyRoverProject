@@ -162,7 +162,7 @@ table  {
   background-image:url("ICONS/Unpushed_stop.png");
 }
 
-.stop:active {
+.stop-active {
   background-image:url("ICONS/Pushed_stop.png");
 }
 
@@ -210,7 +210,7 @@ table  {
     </tr>
     <tr>
       <td></td>
-      <td><input id="stop" class="btn stop" type="button"/></td>
+      <td><input id="btn-stop" class="btn stop" type="button" onclick=""/></td>
       <td></td>
     </tr>
     <tr>
@@ -257,6 +257,10 @@ var btn_backward_left = document.getElementById("btn-backward-left");
 var btn_backward_right = document.getElementById("btn-backward-right");
 var btn_stop = document.getElementById("btn-stop");
 
+var cmd = document.getElementById("commande_code");
+var menu = document.getElementById("menu");
+var grid = document.getElementById("grid");
+var board = document.getElementById("board");
 
 /* Les évenements des boutons */
 
@@ -265,16 +269,23 @@ btn_forward_left.addEventListener("touchend", touchend_btn_forward_left, false);
 
 function touchstart_btn_forward_left(evt) {
   evt.preventDefault();
-  document.getElementById("btn-forward-left").classList.replace("forward","forward-active");
-  document.getElementById("btn-backward-left").disabled = true;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_gauche_avancer;
+  console.log(btn_forward_left.disabled);
+  console.log(btn_backward_left.disabled);
+  if (! btn_forward_left.disabled){
+    cmd.value = Number(cmd.value) + cmd_gauche_avancer;
+    btn_forward_left.classList.replace("forward","forward-active");
+    btn_backward_left.disabled = true;
+  }
 }
 
 function touchend_btn_forward_left(evt) {
   evt.preventDefault();
-  document.getElementById("btn-forward-left").classList.replace("forward-active","forward");
-  document.getElementById("btn-backward-left").disabled = false;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_gauche_avancer;
+  if (! btn_forward_left.disabled){
+    cmd.value = Number(cmd.value) - cmd_gauche_avancer;
+    btn_forward_left.classList.replace("forward-active","forward");
+    btn_backward_left.disabled = false;
+  }
+
 }
 
 btn_forward_right.addEventListener("touchstart", touchstart_btn_forward_right, false);
@@ -282,16 +293,20 @@ btn_forward_right.addEventListener("touchend", touchend_btn_forward_right, false
 
 function touchstart_btn_forward_right(evt) {
   evt.preventDefault();
-  document.getElementById("btn-forward-right").classList.replace("forward","forward-active");
-  document.getElementById("btn-backward-right").disabled = true;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_droit_avancer;
+  if (! btn_forward_right.disabled){
+    cmd.value = Number(cmd.value) + cmd_droit_avancer;
+    btn_forward_right.classList.replace("forward","forward-active");
+    btn_backward_right.disabled = true;
+  }
 }
 
 function touchend_btn_forward_right(evt) {
   evt.preventDefault();
-  document.getElementById("btn-forward-right").classList.replace("forward-active","forward");
-  document.getElementById("btn-backward-right").disabled = false;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_droit_avancer;
+  if (! btn_forward_right.disabled){
+    cmd.value = Number(cmd.value) - cmd_droit_avancer;
+    btn_forward_right.classList.replace("forward-active","forward");
+    btn_backward_right.disabled = false;
+  }
 }
 
 btn_backward_left.addEventListener("touchstart", touchstart_btn_backward_left, false);
@@ -299,16 +314,20 @@ btn_backward_left.addEventListener("touchend", touchend_btn_backward_left, false
 
 function touchstart_btn_backward_left(evt) {
   evt.preventDefault();
-  document.getElementById("btn-backward-left").classList.replace("forward","forward-active");
-  document.getElementById("btn-forward-left").disabled = true;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_gauche_reculer;
+  if(! btn_backward_left.disabled){
+    cmd.value = Number(cmd.value) + cmd_gauche_reculer;
+    btn_backward_left.classList.replace("backward","backward-active");
+    btn_forward_left.disabled = true;
+  }
 }
 
 function touchend_btn_backward_left(evt) {
   evt.preventDefault();
-  document.getElementById("btn-backward-left").classList.replace("forward-active","forward");
-  document.getElementById("btn-forward-left").disabled = false;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_gauche_reculer;
+  if(! btn_backward_left.disabled){
+    cmd.value = Number(cmd.value) - cmd_gauche_reculer;
+    btn_backward_left.classList.replace("backward-active","backward");
+    btn_forward_left.disabled = false;
+  }
 }
 
 btn_backward_right.addEventListener("touchstart", touchstart_btn_backward_right, false);
@@ -316,29 +335,56 @@ btn_backward_right.addEventListener("touchend", touchend_btn_backward_right, fal
 
 function touchstart_btn_backward_right(evt) {
   evt.preventDefault();
-  document.getElementById("btn-backward-right").classList.replace("forward","forward-active");
-  document.getElementById("btn-forward-right").disabled = true;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) + cmd_droit_reculer;
+  if(! btn_backward_right.disabled){
+    cmd.value = Number(cmd.value) + cmd_droit_reculer;
+    btn_backward_right.classList.replace("backward","backward-active");
+    btn_forward_right.disabled = true;
+  }
 }
 
 function touchend_btn_backward_right(evt) {
   evt.preventDefault();
-  document.getElementById("btn-backward-right").classList.replace("forward-active","forward");
-  document.getElementById("btn-forward-right").disabled = false;
-  document.getElementById("commande_code").value = Number(document.getElementById("commande_code").value) - cmd_droit_reculer;
+  if(! btn_backward_right.disabled){
+    cmd.value = Number(cmd.value) - cmd_droit_reculer;
+    evt.target.classList.replace("backward-active","backward");
+    btn_forward_right.disabled = false;
+  }
+}
+
+btn_stop.addEventListener("touchstart", touchstart_btn_stop, false);
+btn_stop.addEventListener("touchend", touchend_btn_stop, false);
+
+function touchstart_btn_stop(evt) {
+  evt.preventDefault();
+  cmd.value = cmd_stop;
+  btn_stop.classList.replace("stop","stop-active");
+  btn_forward_left.disabled = true;
+  btn_forward_right.disabled = true;
+  btn_backward_left.disabled = true;
+  btn_backward_right .disabled = true;
+}
+
+function touchend_btn_stop(evt) {
+  evt.preventDefault();
+  cmd.value = cmd_neutre;
+  btn_stop.classList.replace("stop-active","stop");
+  btn_forward_left.disabled = false;
+  btn_forward_right.disabled = false;
+  btn_backward_left.disabled = false;
+  btn_backward_right .disabled = false;
 }
 
 /*Le menu du haut*/
 function showMenuPanel(){
-  document.getElementById("menu").style.display = "block";
-  document.getElementById("grid").style.display = "none";
-  document.getElementById("board").style.display = "none";
+  menu.style.display = "block";
+  grid.style.display = "none";
+  board.style.display = "none";
 }
 
 function hideMenuPanel(){
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("grid").style.display = "block";
-  document.getElementById("board").style.display = "block";
+  menu.style.display = "none";
+  grid.style.display = "block";
+  board.style.display = "block";
 }
 
 /*La partie connexion*/
